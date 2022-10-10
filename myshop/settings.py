@@ -15,6 +15,9 @@ import os
 import environ
 env = environ.Env()
 
+
+# For Django Oscar
+
 from oscar.defaults import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -54,6 +57,9 @@ INSTALLED_APPS = [
 
     'django.contrib.sites',
     'django.contrib.flatpages',
+
+    'django_extensions',
+
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
@@ -120,7 +126,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,7 +183,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -191,10 +197,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+MEDIA_URL = '/media/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_ROOT = os.path.join('static_cdn', 'static_root')
+MEDIA_ROOT = os.path.join('static_cdn', 'media_root')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SITE_ID = 1
+
 
 # OSCAR 
 
@@ -204,4 +224,10 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-SITE_ID = 1
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+
+}
+
