@@ -1,6 +1,5 @@
-# IDLEWILD-COMMERCE
-
-## Installation
+# My Shop
+## Document
 
 - Clone the repository
 - Create a `.env` file
@@ -13,4 +12,3 @@
 
 oscar ALL API:
     `http://127.0.0.1:8000/swagger/`
-    
