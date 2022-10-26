@@ -1,0 +1,5 @@
+mkdir
+
+python manage.py oscar_fork_app catalogue apps
+
+python manage.py oscar_fork_app dashboard apps

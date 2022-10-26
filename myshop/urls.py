@@ -57,6 +57,7 @@ urlpatterns = [
     # Nonetheless, it's often useful for debugging.
 
     path('admin/', admin.site.urls),
+    # path("", include("extension.urls")),
     path('', include('shop.urls')),
     path("api/", include("oscarapi.urls")),
 
