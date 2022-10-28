@@ -107,7 +107,9 @@ INSTALLED_APPS = [
     'drf_yasg2',
     'rest_framework',
     'oscarapi',
-    # 'extension.apps.ExtensionConfig',
+    # 'apps.extension.apps.ExtensionConfig',
+
+    # 'oscar.apps.customer.apps.CustomerConfig'
 ]
 
 MIDDLEWARE = [

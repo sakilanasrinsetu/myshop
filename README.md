@@ -8,7 +8,10 @@
 - Run django migrate commands
 - Run the project with `runserver` command
 
-## Project API Url
+# Project API Url
 
-oscar ALL API:
     `http://127.0.0.1:8000/swagger/`
+
+    'http://127.0.0.1:8000/catalogue/'
+
+
