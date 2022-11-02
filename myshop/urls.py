@@ -63,6 +63,10 @@ urlpatterns = [
 
     path('', include(apps.get_app_config('oscar').urls[0])),
 
+    # Django Oscar Promotions
+    path("", apps.get_app_config("oscar_promotions").urls),
+    path("dashboard/promotions/", apps.get_app_config("oscar_promotions_dashboard").urls),
+
 ]+swagger_url
 
 if settings.DEBUG:
