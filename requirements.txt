@@ -28,7 +28,7 @@ packaging==21.3
 phonenumbers==8.12.54
 Pillow==9.2.0
 purl==1.6
-pygraphviz==1.10
+graphviz
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-decouple==3.6
