@@ -6,7 +6,8 @@ coreapi==2.3.3
 coreschema==0.0.4
 Django==3.2.15
 django-environ==0.9.0
-django-extensions==3.2.1
+# django-extensions==3.2.1
+django-extensions==3.1.4
 django-extra-views==0.13.0
 django-haystack==3.2.1
 django-oscar==3.1
@@ -29,7 +30,7 @@ packaging==21.3
 phonenumbers==8.12.54
 Pillow==9.2.0
 purl==1.6
-pygraphviz==1.10
+# pygraphviz==1.10
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-decouple==3.6
@@ -42,3 +43,4 @@ sorl-thumbnail==12.9.0
 sqlparse==0.4.2
 uritemplate==4.1.1
 urllib3==1.26.12
+# django-oscar-invoices==0.2 #you have install it manually

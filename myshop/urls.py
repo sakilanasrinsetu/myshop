@@ -25,7 +25,7 @@ from django.views.static import serve
 from rest_framework import permissions
 from drf_yasg2.views import get_schema_view
 from drf_yasg2 import openapi
-
+from apps.oscar_invoices import urls as oscar_invoices_urls
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -65,6 +65,8 @@ urlpatterns = [
 
     # oscar accounts 
     path('dashboard/accounts/', apps.get_app_config('accounts_dashboard').urls),
+    path('invoices', include(apps.get_app_config("oscar_invoices").urls[0])),
+    path('invoices', include(oscar_invoices_urls)),
 
 ]+swagger_url
 
