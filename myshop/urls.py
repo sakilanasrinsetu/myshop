@@ -65,6 +65,7 @@ urlpatterns = [
 
     # oscar accounts 
     path('dashboard/accounts/', apps.get_app_config('accounts_dashboard').urls),
+    path('api/dashboard/', include("accounts.urls")),
 
 ]+swagger_url
 
