@@ -110,6 +110,10 @@ INSTALLED_APPS = [
     # 'apps.extension.apps.ExtensionConfig',
 
     # 'oscar.apps.customer.apps.CustomerConfig'
+
+    # oscar accounts
+    "oscar_accounts.apps.AccountsConfig",
+    "oscar_accounts.dashboard.apps.AccountsDashboardConfig",
 ]
 
 MIDDLEWARE = [
@@ -243,3 +247,27 @@ GRAPH_MODELS = {
 
 }
 
+# oscar accounts
+OSCAR_DASHBOARD_NAVIGATION.append(
+    {
+        'label': 'Accounts',
+        'icon': 'fas fa-globe',
+        'children': [
+            {
+                'label': 'Accounts',
+                'url_name': 'accounts_dashboard:accounts-list',
+            },
+            {
+                'label': 'Transfers',
+                'url_name': 'accounts_dashboard:transfers-list',
+            },
+            {
+                'label': 'Deferred income report',
+                'url_name': 'accounts_dashboard:report-deferred-income',
+            },
+            {
+                'label': 'Profit/loss report',
+                'url_name': 'accounts_dashboard:report-profit-loss',
+            },
+        ]
+    })
