@@ -114,6 +114,10 @@ INSTALLED_APPS = [
     # Django Oscar Promotions Lib
     'oscar_promotions.apps.PromotionsConfig',
     'oscar_promotions.dashboard.apps.PromotionsDashboardConfig',
+
+    # oscar accounts
+    "oscar_accounts.apps.AccountsConfig",
+    "oscar_accounts.dashboard.apps.AccountsDashboardConfig",
 ]
 
 MIDDLEWARE = [
@@ -247,3 +251,28 @@ GRAPH_MODELS = {
 
 }
 
+
+# oscar accounts settings
+OSCAR_DASHBOARD_NAVIGATION.append(
+    {
+        'label': 'Accounts',
+        'icon': 'fas fa-globe',
+        'children': [
+            {
+                'label': 'Accounts',
+                'url_name': 'accounts_dashboard:accounts-list',
+            },
+            {
+                'label': 'Transfers',
+                'url_name': 'accounts_dashboard:transfers-list',
+            },
+            {
+                'label': 'Deferred income report',
+                'url_name': 'accounts_dashboard:report-deferred-income',
+            },
+            {
+                'label': 'Profit/loss report',
+                'url_name': 'accounts_dashboard:report-profit-loss',
+            },
+        ]
+    })
