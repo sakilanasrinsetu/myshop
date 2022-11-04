@@ -1,0 +1,84 @@
+{% extends 'oscar/dashboard/layout.html' %}
+{% load i18n %}
+
+{% block body_class %}stores{% endblock %}
+{% block title %}
+{% trans "Store management" %} | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Store groups" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+    <a href="{% url 'stores-dashboard:store-group-create' %}" class="btn btn-primary float-right"><i class="fas fa-plus-circle"></i> {% trans "Create new store group" %}</a>
+    <h1>{% trans "Store Groups" %}</h1>
+</div>
+{% endblock header %}
+
+{% block dashboard_content %}
+
+{% if group_list.all|length %}
+<form method="post" class="order_table">
+    {% csrf_token %}
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>{% trans "Group Name" %}</th>
+            <th>{% trans "Store" %}</th>
+            <th>{% trans "Street" %}</th>
+            <th>{% trans "City" %}</th>
+            <th>{% trans "Post Code" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Country" %}</th>
+            <th></th>
+        </tr>
+        {% for group in group_list %}
+            {% for store in group.stores.all %}
+            <tr>
+                {% if forloop.first %}
+                    <td rowspan="{{ group.stores.all|length }}">{{ group.name }}</td>
+                {% endif%}
+                <td>{{ store.name }}</td>
+                {% with address=store.address %}
+                    <td>{{ address.street }}</td>
+                    <td>{{ address.city }}</td>
+                    <td>{{ address.postcode }}</td>
+                    <td>{{ address.state }}</td>
+                    <td>{{ address.country }}</td>
+                {% endwith %}
+                {% if forloop.first %}
+                    <td rowspan="{{ group.stores.all|length }}">
+                        <a class="btn btn-info" href="{% url 'stores-dashboard:store-group-update' group.id %}">{% trans "Edit" %}</a>
+                        <a class="btn btn-danger" href="{% url 'stores-dashboard:store-group-delete' group.id %}">{% trans "Delete" %}</a>
+                    </td>
+                {% endif%}
+            </tr>
+            {% empty %}
+            <tr>
+                <td>{{ group.name }}</td>
+                <td colspan="6">{% trans "No stores assigned to this group." %}</td>
+                <td>
+                    <a class="btn btn-info" href="{% url 'stores-dashboard:store-group-update' group.id %}">{% trans "Edit" %}</a>
+                    <a class="btn btn-danger" href="{% url 'stores-dashboard:store-group-delete' group.id %}">{% trans "Delete" %}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+
+    {% if page_obj %}
+        {% include "oscar/partials/pagination.html" %}
+    {% endif %}
+</form>
+
+{% else %}
+    <p>{% trans "No store groups found." %}</p>
+{% endif %}
+
+{% endblock dashboard_content %}
