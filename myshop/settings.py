@@ -119,6 +119,10 @@ INSTALLED_APPS = [
     # oscar accounts
     "oscar_accounts.apps.AccountsConfig",
     "oscar_accounts.dashboard.apps.AccountsDashboardConfig",
+    
+    #stores
+    "stores",
+    "stores.dashboard"
 ]
 
 MIDDLEWARE = [

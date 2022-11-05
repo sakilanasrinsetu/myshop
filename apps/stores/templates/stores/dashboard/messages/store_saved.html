@@ -1,0 +1,6 @@
+{% load i18n %}
+{% blocktrans with name=store.name %}
+<strong>{{ name }}</strong> store saved.
+{% endblocktrans %}
+<a href="{{ store.get_absolute_url }}" class="btn btn-success">{% trans "View on site" %}</a>
+<a href="{% url 'stores-dashboard:store-update' store.pk %}" class="btn btn-warning">{% trans "Edit again" %}</a>

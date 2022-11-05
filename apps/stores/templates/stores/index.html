@@ -1,0 +1,155 @@
+{% extends "oscar/layout.html" %}
+{% load currency_filters i18n image_tags l10n static widget_tweaks %}
+
+{% block extrahead %}
+    <style>map img { max-width: none; }</style>
+    <link rel="stylesheet" href="{{ STATIC_URL }}stores/css/stores.css" />
+{% endblock %}
+
+{% block title %}
+{{ queryset_description }} | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'home' %}">{% trans "Home" %}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'stores:index' %}">{% trans "Stores" %}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ queryset_description }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block headertext %}
+{{ queryset_description }}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        {% if all_stores %}
+        <div class="col-md-3 view-stores">
+            <form id="store-search" method="get">
+                <button type="button" class="btn btn-primary btn-block" data-behaviours="geo-location"><i class="fas fa-map-marker-alt"></i> {% trans "Use my location" %}</button>
+                <header class="divide-header">
+                    <em>-</em> <span>{% trans "or" %}</span> <em>-</em>
+                </header>
+
+                {{ form.non_field_errors }}
+
+                {# Hidden fields that are manipulated by JS #}
+                {{ form.latitude }}
+                {{ form.longitude }}
+
+                <div class="form-group">
+                    <div class="input-group">
+                        {% render_field form.query class+='form-control' %}
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" type="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                {% if form.group.field.choices %}
+                    <h3>{% trans "Filter by group" %}</h3>
+                    {% include "oscar/partials/form_field.html" with field=form.group nolabel=True %}
+                {% endif %}
+            </form>
+
+                <h3>All stores</h3>
+                    <ul class="nav flex-column">
+                {% for store in all_stores %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'stores:detail' store.slug store.pk %}">
+                        {{ store.name }}
+                    </a>
+                </li>
+                {% endfor %}
+                </ul>
+        </div>
+
+        <div class="col-md-9">
+            {% if store_list %}
+                <div id="store-map" style="width: 100%; height: 380px;"></div>
+
+                {% for store in store_list %}
+                <div class="stores-list">
+                    <div class="sub-header">
+                        <h4>{{ store.name }}
+                        {% if store.distance %}
+                            <span class="text-muted small">{{ store.distance.km|floatformat:2 }} km</span>
+                        {% endif %}
+                        <a href="{% url 'stores:detail' store.slug store.pk %}" class="btn btn-primary float-right">{% trans "View store details" %}</a></h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if store.image %}
+                                {% oscar_thumbnail store.image "400x400" as im %}
+                                <a href="{{ store.get_absolute_url }}"><img alt="{{ store.name }}" src="{{ im.url }}" width="{{ im.width}}" height="{{ im.height }}" class="img-fluid"></a>
+                            {% else %}
+                                <a href="{{ store.get_absolute_url }}">{{ store.name }}</a>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            {% include "stores/partials/store_address.html" %}
+                            {% include "stores/partials/store_contact.html" %}
+                            <br/>
+                        </div>
+
+                        <div class="col-md-4">
+                            {% include "stores/partials/store_opening_periods.html" %}
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>{% trans "No stores found in the area." %}</p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>{% trans "No store data available." %}</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    {% include "stores/partials/extrascripts.html" %}
+{% endblock %}
+
+{% block onbodyload %}
+    {% if store_list %}
+        var storeData = [
+            {% for store in store_list %}
+            {
+                'name': '{{ store.name|escapejs }}',
+                'location': new google.maps.LatLng({{ store.location.y|unlocalize }}, {{ store.location.x|unlocalize }}),
+                'imageURL': '{% if store.image %}{{ store.image.url }}{% endif %}',
+                'address1': '{{ store.address.line1|escapejs }}',
+                'address2': '{{ store.address.line2|escapejs }}',
+                'address3': '{{ store.address.line3|escapejs }}',
+                'address4': '{{ store.address.line4|escapejs }}',
+                'postcode': '{{ store.address.postcode|escapejs }}',
+                'url': '{{ store.get_absolute_url|escapejs }}',
+                'email': '{{ store.email|escapejs }}',
+                'phone': '{% if store.phone %}{{ store.phone|escapejs }}{% endif %}',
+                'group': '{{ store.group.name|upper }}'
+            } {% if forloop.counter < store_list|length %},{% endif %}
+            {% endfor %}
+        ];
+        {% if longitude and latitude %}
+            var pnt = new google.maps.LatLng({{ latitude}}, {{ longitude }});
+        {% else %}
+            var pnt = null;
+        {% endif %}
+        stores.maps.overview.init(storeData, pnt);
+    {% endif %}
+{% endblock %}

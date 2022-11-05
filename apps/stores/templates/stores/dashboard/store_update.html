@@ -1,0 +1,219 @@
+{% extends 'oscar/dashboard/layout.html' %}
+{% load i18n static %}
+
+{% block body_class %}stores{% endblock %}
+
+{% block title %}
+{{ title }} | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'stores-dashboard:store-list' %}">{% trans "Stores" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block headertext %}{{ title }}{% endblock %}
+
+{% block dashboard_content %}
+
+{% if form.errors %}
+<div class="alert alert-danger">
+    {% trans "Your submitted data did not validate - please correct the below errors and resubmit." %}
+</div>
+{% endif %}
+
+<form method="post" class="form-vertical wysiwyg" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                <span class="help-inline"><i class="fas fa-exclamation"></i> {{ error }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-header">
+        <h3>{% trans "Store details" %}</h3>
+    </div>
+    <div class="card card-body bg-light">
+        {% block store_details_fields %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.name %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.description %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.reference %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.group %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.image %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.is_pickup_store %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.is_active %}
+        {% endblock store_details_fields %}
+    </div>
+
+    <div class="table-header">
+        <h3>{% trans "Contact details" %}</h3>
+    </div>
+    <div class="card card-body bg-light">
+        {% block contact_details_fields %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.manager_name %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.phone %}
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.email %}
+        {% endblock contact_details_fields %}
+    </div>
+
+    <div class="table-header">
+        <h3>{% trans "Address" %}</h3>
+    </div>
+    <div class="card card-body bg-light">
+        {% block address_fields %}
+        {% with formset=inlines.1 %}
+            {{ formset.management_form }}
+            {% for address_form in formset %}
+                {% if address_form.non_field_errors %}
+                    {% for error in address_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <span class="help-inline"><i class="fas fa-exclamation"></i> {{ error }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% for field in address_form %}
+                    {% include "oscar/dashboard/partials/form_field.html" %}
+                {% endfor %}
+            {% endfor %}
+        {% endwith %}
+        {% endblock address_fields %}
+    </div>
+
+    <div class="table-header">
+        <h3>{% trans "Location" %}</h3>
+    </div>
+    <div class="card card-body bg-light">
+        {% block location_fields %}
+        <p>
+            {% blocktrans %}
+            Enter an address in the location input and select your address from the options that appear.
+            You can drag the marker around on the map to fine-tune the location.
+            {% endblocktrans %}
+        </p>
+        {% include "oscar/dashboard/partials/form_field.html" with field=form.location %}
+        <div class="controls">
+            <input type="text" id="search-text-field" style="margin-bottom: 10px; width: 968px;"/>
+            {% if form.location.errors %}
+                <div class="alert alert-danger">{% trans "Please select a location for your store." %}</div>
+            {% endif %}
+            <div id="store-map" style="width: 968px; height: 380px"></div>
+        </div>
+        {% endblock location_fields %}
+    </div>
+
+    <div class="table-header">
+        <h3>{% trans "Opening hours" %}</h3>
+    </div>
+
+    <div class="card card-body bg-light form-horizontal" id="opening_hours_form">
+        {% block opening_hours_fields %}
+        {# use the first formset which is the opening times #}
+        {% with workhours=inlines.0 %}
+            {{ formset.management_form }}
+            {% for formset in workhours %}
+            {% if formset.non_field_errors %}
+                {% for error in formset.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <span class="help-inline"><i class="fas fa-exclamation"></i> {{ error }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="weekday-block row">
+                <div class="col-md-2">
+                  <label>{{ formset.get_weekday_display }}</label>
+                </div>
+
+                <div class="col-md-1">
+                    <label>{{ formset.open.label }}</label>
+                    {{ formset.open }}
+                </div>
+
+                <div class="col-md-8">
+
+                  <div class="row">
+                    <div class="col-md-3">
+                      {{ formset.0.start.label_tag }}
+                    </div>
+                    <div class="col-md-3">
+                      {{ formset.0.end.label_tag }}
+                    </div>
+                  </div>
+
+                  {% for form in formset %}
+                  <div class="row mb-2 hour-input{% if not forloop.first and not form.start.value and not form.end.value %} d-none{% endif %}">
+
+                    <div class="col-md-3">
+                        {{ form.start }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.end }}
+                    </div>
+                    <div class="col-md-3">
+                        <label>{{ form.DELETE }} Delete</label>
+                    </div>
+
+                    {{ form.id }}
+
+                    {% if form.errors %}
+                    <div class="col-md-4">
+                      <div class="alert alert-danger">
+                      {% for field in form %}
+                        {% if field.errors %}
+                          {{ field.label }}:
+                          {% for err in field.errors %}{{ err }}{% endfor %}
+                          <br />
+                        {% endif %}
+                      {% endfor %}
+
+                      {# Non-field errors #}
+                      {% if form.non_field_errors %}
+                        {{ form.non_field_errors }}
+                        <br />
+                      {% endif %}
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+
+                  <button class="btn btn-primary add-more mb-5">+</button>
+                </div>
+
+                {{ formset.management_form }}
+            </div>
+            {% endfor %}
+        {% endwith %}
+        {% endblock opening_hours_fields %}
+    </div>
+
+    {% block extra_field_blocks %}
+    {% endblock extra_field_blocks %}
+
+    <div class="card card-body bg-light">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
+            {% trans "or" %}
+            <a href="{% url 'stores-dashboard:store-list' %}">{% trans "cancel" %}</a>
+        </div>
+    </div>
+</form>
+{% endblock dashboard_content %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    <script src="https://maps.google.com/maps/api/js?key={{ maps_api_key }}&amp;libraries=places"></script>
+    <script src="{% static "stores/js/dashboard.js" %}"></script>
+{% endblock %}
+
+{% block onbodyload %}
+    {{ block.super }}
+    stores.dashboard.init();
+{% endblock onbodyload %}
