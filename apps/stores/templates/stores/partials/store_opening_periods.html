@@ -1,0 +1,21 @@
+{% load opening_hours %}
+
+{% with periods=store.opening_periods.all %}
+    {% if periods|length %}
+        {% regroup periods by weekday as grouped_periods %}
+        <table class='table table-bordered table-striped table-sm'>
+            <tbody>
+                {% for weekday in grouped_periods %}
+                    <tr>
+                        <td>{{ weekday.list.0|printable_weekday }}</td>
+                        <td>
+                            {% for period in weekday.list %}
+                                {{ period|printable_period:"H:i" }}<br/>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endwith %}

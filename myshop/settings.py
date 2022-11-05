@@ -71,7 +71,8 @@ INSTALLED_APPS = [
     'apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
-    'oscar.apps.partner.apps.PartnerConfig',
+    # 'oscar.apps.partner.apps.PartnerConfig',
+    'apps.partner.apps.PartnerConfig',
     'oscar.apps.basket.apps.BasketConfig',
     'oscar.apps.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
@@ -118,6 +119,10 @@ INSTALLED_APPS = [
     # oscar accounts
     "oscar_accounts.apps.AccountsConfig",
     "oscar_accounts.dashboard.apps.AccountsDashboardConfig",
+    
+    #stores
+    "stores",
+    "stores.dashboard"
 ]
 
 MIDDLEWARE = [
@@ -176,8 +181,9 @@ WSGI_APPLICATION = 'myshop.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -254,28 +260,3 @@ GRAPH_MODELS = {
 
 }
 
-
-# oscar accounts settings
-OSCAR_DASHBOARD_NAVIGATION.append(
-    {
-        'label': 'Accounts',
-        'icon': 'fas fa-globe',
-        'children': [
-            {
-                'label': 'Accounts',
-                'url_name': 'accounts_dashboard:accounts-list',
-            },
-            {
-                'label': 'Transfers',
-                'url_name': 'accounts_dashboard:transfers-list',
-            },
-            {
-                'label': 'Deferred income report',
-                'url_name': 'accounts_dashboard:report-deferred-income',
-            },
-            {
-                'label': 'Profit/loss report',
-                'url_name': 'accounts_dashboard:report-profit-loss',
-            },
-        ]
-    })
