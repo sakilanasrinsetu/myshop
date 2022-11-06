@@ -3,6 +3,10 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
 from oscar.core.loading import get_class, get_model
+from .serializers import InvoiceSerializer
+from rest_framework import generics, status
+from rest_framework.views import APIView
+
 
 Invoice = get_model('oscar_invoices', 'Invoice')
 InvoiceCreator = get_class('oscar_invoices.utils', 'InvoiceCreator')
@@ -25,3 +29,47 @@ class InvoicePreviewView(UserPassesTestMixin, SingleObjectMixin, View):
             request=request
         )
         return HttpResponse(rendered_invoice)
+
+
+# Invoice API's
+
+class InvoiceAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        invoice = Invoice.objects.get(pk=kwargs['pk'])
+        serializer = InvoiceSerializer(invoice)
+        return Response(serializer.data)
+    
+    def put(self, request, *args, **kwargs):
+        invoice = Invoice.objects.get(pk=kwargs['pk'])
+        serializer = InvoiceSerializer(invoice, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        invoice = Invoice.objects.get(pk=kwargs['pk'])
+        invoice.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = InvoiceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        invoice = Invoice.objects.get(pk=kwargs['pk'])
+        serializer = InvoiceSerializer(invoice, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
