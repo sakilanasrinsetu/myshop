@@ -64,8 +64,8 @@ urlpatterns = [
     path('', include(apps.get_app_config('oscar').urls[0])),
 
     # Django Oscar Promotions
-    path("", apps.get_app_config("oscar_promotions").urls),
-    path("dashboard/promotions/", apps.get_app_config("oscar_promotions_dashboard").urls),
+    # path("", apps.get_app_config("oscar_promotions").urls),
+    # path("dashboard/promotions/", apps.get_app_config("oscar_promotions_dashboard").urls),
 
     # oscar accounts 
     path('dashboard/accounts/', apps.get_app_config('accounts_dashboard').urls),

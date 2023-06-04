@@ -113,16 +113,16 @@ INSTALLED_APPS = [
     # 'oscar.apps.customer.apps.CustomerConfig'
 
     # Django Oscar Promotions Lib
-    'oscar_promotions.apps.PromotionsConfig',
-    'oscar_promotions.dashboard.apps.PromotionsDashboardConfig',
+    # 'oscar_promotions.apps.PromotionsConfig',
+    # 'oscar_promotions.dashboard.apps.PromotionsDashboardConfig',
 
     # oscar accounts
     "oscar_accounts.apps.AccountsConfig",
     "oscar_accounts.dashboard.apps.AccountsDashboardConfig",
     
     #stores
-    "stores",
-    "stores.dashboard"
+    # "stores",
+    # "stores.dashboard"
 ]
 
 MIDDLEWARE = [
